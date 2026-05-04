@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
+use Spatie\Permission\Models\Role; // Import Model Role Spatie
 
 class UserController extends Controller
 {
@@ -14,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $data = User::paginate(10);
+        $data = User::with('roles')->latest()->paginate(10);
+
         return Inertia::render('Users/Index', [
             'users' => $data
         ]);
@@ -25,7 +27,9 @@ class UserController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Users/Create');
+        return Inertia::render('Users/Create', [
+            'roles' => Role::all()
+        ]);
     }
 
     /**
@@ -37,11 +41,16 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|exists:roles,name',
         ]);
 
-        User::create($request->only('name', 'email') + [
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+        $user->assignRole($request->role);
 
         return to_route('users.index')->with('success', 'User created successfully.');
     }
@@ -51,9 +60,17 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $data = User::find($id);
+        $data = User::with(['roles', 'permissions'])->findOrFail($id);
+
         return Inertia::render('Users/Show', [
-            'user' => $data
+            'user' => [
+                'id' => $data->id,
+                'name' => $data->name,
+                'email' => $data->email,
+                'created_at' => $data->created_at,
+                'roles' => $data->roles->pluck('name'),
+                'all_permissions' => $data->getAllPermissions()->pluck('name'),
+            ]
         ]);
     }
 
@@ -62,9 +79,11 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $data = User::find($id);
+        $user = User::with('roles')->findOrFail($id);
+
         return Inertia::render('Users/Edit', [
-            'user' => $data
+            'user' => $user,
+            'roles' => Role::all()
         ]);
     }
 
@@ -79,6 +98,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6|confirmed',
+            'role' => 'required|exists:roles,name',
         ]);
 
         $user->name = $request->name;
@@ -90,7 +110,9 @@ class UserController extends Controller
 
         $user->save();
 
-        return to_route('users.index')->with('success', 'User updated successfully.'); //
+        $user->syncRoles($request->role);
+
+        return to_route('users.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -99,6 +121,9 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
+
+        // $user->roles()->detach();
+
         $user->delete();
 
         return to_route('users.index')->with('success', 'User deleted successfully.');

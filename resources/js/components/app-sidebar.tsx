@@ -27,6 +27,11 @@ const mainNavItems: NavItem[] = [
         href: '/users',
         icon: UsersRound,
     },
+    {
+        title: 'Role',
+        href: '/roles',
+        icon: FolderGit2,
+    },
 ];
 
 const footerNavItems: NavItem[] = [

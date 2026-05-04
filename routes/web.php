@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
@@ -20,6 +21,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
         Route::put('/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('roles')->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->name('index');
+        Route::get('/create', [RoleController::class, 'create'])->name('create');
+        Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{user}', [RoleController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [RoleController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [RoleController::class, 'update'])->name('update');
+        Route::delete('/{user}', [RoleController::class, 'destroy'])->name('destroy');
     });
 });
 

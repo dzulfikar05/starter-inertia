@@ -3,11 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowLeftCircleIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export default function Create() {
+interface Role {
+    id: number;
+    name: string;
+}
+
+export default function Create({ roles }: { roles: Role[] }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
+        role: '', // State baru untuk role
         password: '',
         password_confirmation: '',
     });
@@ -22,19 +29,17 @@ export default function Create() {
             <Head title="Users Create" />
 
             <div className="space-y-6 p-4">
-                {/* Header Section */}
                 <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-bold text-gray-800">
                             Create New User
                         </h2>
                         <Button asChild variant="outline">
-                            <Link href="/users"><ArrowLeftCircleIcon/> Back</Link>
+                            <Link href="/users"><ArrowLeftCircleIcon className="mr-2 h-4 w-4"/> Back</Link>
                         </Button>
                     </div>
                 </div>
 
-                {/* Form Section */}
                 <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
                     <form onSubmit={submit} className="max-w-xl space-y-4">
 
@@ -43,8 +48,6 @@ export default function Create() {
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
-                                type="text"
-                                name="name"
                                 value={data.name}
                                 onChange={(e) => setData('name', e.target.value)}
                                 placeholder="John Doe"
@@ -58,12 +61,29 @@ export default function Create() {
                             <Input
                                 id="email"
                                 type="email"
-                                name="email"
                                 value={data.email}
                                 onChange={(e) => setData('email', e.target.value)}
                                 placeholder="john@example.com"
                             />
                             {errors.email && <span className="text-sm text-red-500">{errors.email}</span>}
+                        </div>
+
+                        {/* Dropdown Role Baru */}
+                        <div className="space-y-1">
+                            <Label htmlFor="role">User Role</Label>
+                            <Select onValueChange={(value) => setData('role', value)}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {roles.map((role) => (
+                                        <SelectItem key={role.id} value={role.name}>
+                                            {role.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.role && <span className="text-sm text-red-500">{errors.role}</span>}
                         </div>
 
                         {/* Input Password */}
@@ -72,7 +92,6 @@ export default function Create() {
                             <Input
                                 id="password"
                                 type="password"
-                                name="password"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
                                 placeholder="••••••••"
@@ -86,21 +105,19 @@ export default function Create() {
                             <Input
                                 id="password_confirmation"
                                 type="password"
-                                name="password_confirmation"
                                 value={data.password_confirmation}
                                 onChange={(e) => setData('password_confirmation', e.target.value)}
                                 placeholder="••••••••"
                             />
                         </div>
 
-                        {/* Submit Button */}
                         <div className="pt-4">
                             <Button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
+                                className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto text-white"
                                 disabled={processing}
                             >
-                                {processing ? 'Saving...' : 'Save User'}
+                                {processing ? 'Saving...' : 'Save'}
                             </Button>
                         </div>
                     </form>
@@ -112,13 +129,7 @@ export default function Create() {
 
 Create.layout = {
     breadcrumbs: [
-        {
-            title: 'Users',
-            href: '/users',
-        },
-        {
-            title: 'Create',
-            href: '/users/create',
-        },
+        { title: 'Users', href: '/users' },
+        { title: 'Create', href: '/users/create' },
     ],
 };
