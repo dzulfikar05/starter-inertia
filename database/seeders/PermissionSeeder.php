@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionSeeder extends Seeder
 {
@@ -12,20 +14,38 @@ class PermissionSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-{
-    $permissions = [
-        "users.view",
-        "users.edit",
-        "users.create",
-        "users.delete",
-        "roles.view",
-        "roles.edit",
-        "roles.create",
-        "roles.delete",
-    ];
+    {
+        $permissions = [
+            "dashboard.view",
 
-    foreach ($permissions as $key => $value) {
-        Permission::create(['name' => $value]);
+            "users.view",
+            "users.show",
+            "users.edit",
+            "users.create",
+            "users.delete",
+
+            "roles.view",
+            "roles.show",
+            "roles.edit",
+            "roles.create",
+            "roles.delete",
+        ];
+
+        foreach ($permissions as $value) {
+            Permission::create(['name' => $value]);
+        }
+
+        $superadminRole = Role::create(['name' => 'superadmin']);
+        $superadminRole->syncPermissions(Permission::all());
+
+        $user = User::create(
+            [
+                'email' => 'admin@mail.com',
+                'name' => 'admin',
+                'password' => Hash::make('admin123'),
+            ]
+        );
+
+        $user->assignRole($superadminRole);
     }
-}
 }

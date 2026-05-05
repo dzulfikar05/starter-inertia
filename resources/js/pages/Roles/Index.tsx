@@ -1,133 +1,195 @@
 import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
-import {
-    Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import { useEffect } from 'react';
-import { LucideEye, Pencil, Trash } from 'lucide-react';
+import { TableCell } from '@/components/ui/table';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { LucideEye, Pencil, Trash, Plus } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
-
+import { debounce } from 'lodash';
+import { usePermission } from '@/utils/permission';
+import { TableFilter } from '@/components/table-filter';
+import { DataTable } from '@/components/data-table';
+import { ActionButton } from '@/components/action-button';
+import { PageHeader } from '@/components/page-header';
+import { FilterDropdown } from '@/components/table-dropdown';
+import { Label } from '@/components/ui/label';
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 interface Role {
     id: number;
     name: string;
 }
 
-export default function Index({ roles }: { roles:  Array<Role> }) {
+interface RolesProps {
+    roles: {
+        data: Array<Role>;
+        links: any[];
+        current_page: number;
+        last_page: number;
+        total: number;
+        from: number;
+        to: number;
+    };
+    filters: { search?: string; per_page?: string; status?: any };
+}
+
+export default function Index({ roles, filters }: RolesProps) {
     const { flash } = usePage<{ flash: { success?: string } }>().props;
+    const { can } = usePermission();
+
+    const [search, setSearch] = useState(filters.search || '');
+    const [perPage, setPerPage] = useState(filters.per_page || '10');
 
     useEffect(() => {
-        if (flash.success) {
-            const toastId = toast.success(flash.success, { id: flash.success });
-            return () => toast.dismiss(toastId);
-        }
+        if (flash.success) toast.success(flash.success);
     }, [flash.success]);
+
+    const applyFilters = useCallback(
+        (newSearch: string, newPerPage: string) => {
+            router.get(
+                '/roles',
+                { search: newSearch, per_page: newPerPage },
+                { preserveState: true, replace: true, preserveScroll: true },
+            );
+        },
+        [],
+    );
+
+    const debouncedSearch = useMemo(
+        () => debounce((q: string, p: string) => applyFilters(q, p), 500),
+        [applyFilters],
+    );
+
+    useEffect(() => {
+        return () => debouncedSearch.cancel();
+    }, [debouncedSearch]);
+
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearch(value);
+        debouncedSearch(value, perPage);
+    };
+
+    const onPerPageChange = (value: string) => {
+        setPerPage(value);
+        applyFilters(search, value);
+    };
 
     const processDelete = (id: number) => {
         router.delete(`/roles/${id}`, {
-            onSuccess: () => {
-            },
-            onError: () => {
-                toast.error('Gagal menghapus role.');
-            }
+            onSuccess: () => toast.success('Role deleted successfully'),
         });
+    };
+
+    const [tempStatus, setTempStatus] = useState(filters.status || 'all');
+    const handleApplyFilter = () => {
+        router.get(
+            '/roles',
+            {
+                search,
+                per_page: perPage,
+                status: tempStatus,
+            },
+            { preserveState: true },
+        );
     };
 
     return (
         <>
-            <Head title="Roles" />
+            <Head title="Roles Management" />
             <Toaster position="top-right" richColors />
 
             <div className="space-y-6 p-4">
-                {/* Header Section */}
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-gray-800">Role List</h2>
-                        <Button asChild variant="outline">
-                            <Link href="/roles/create">+ Add Role</Link>
-                        </Button>
-                    </div>
-                </div>
+                <PageHeader
+                    title="Role List"
+                    description="Manage system access levels and permissions."
+                    renderAction={
+                        can('roles.create') && (
+                            <Button
+                                asChild
+                                className="bg-blue-600 shadow-md hover:bg-blue-700"
+                            >
+                                <Link href="/roles/create">
+                                    <Plus className="mr-2 h-4 w-4" /> Add Role
+                                </Link>
+                            </Button>
+                        )
+                    }
+                >
+                    <TableFilter
+                    search={search}
+                    onSearchChange={onSearchChange}
+                    perPage={perPage}
+                    onPerPageChange={onPerPageChange}
+                >
+                    <FilterDropdown
+                        onApply={handleApplyFilter}
+                        onReset={() => setTempStatus('all')}
+                    >
+                        <div className="space-y-2">
+                            {/* example filter */}
+                            <Label className="text-xs">Status</Label>
+                            <Select
+                                value={tempStatus}
+                                onValueChange={setTempStatus}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">
+                                        All Status
+                                    </SelectItem>
+                                    <SelectItem value="active">
+                                        Active
+                                    </SelectItem>
+                                    <SelectItem value="inactive">
+                                        Inactive
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </FilterDropdown>
+                </TableFilter>
+                </PageHeader>
 
-                {/* Table Section */}
-                <div className="overflow-hidden rounded-lg bg-white shadow-md">
-                    <Table>
-                        <TableHeader className="bg-gray-50">
-                            <TableRow>
-                                <TableHead className="w-[100px]">ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {roles.map((role) => (
-                                <TableRow key={role.id}>
-                                    <TableCell className="font-medium">{role.id}</TableCell>
-                                    <TableCell>{role.name}</TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex justify-end gap-2">
-                                            {/* View Button */}
-                                            <Button variant="outline" size="icon" className="h-8 w-8 text-purple-600 hover:bg-purple-50" asChild>
-                                                <Link href={`/roles/${role.id}`}>
-                                                    <LucideEye className="h-4 w-4" />
-                                                </Link>
-                                            </Button>
 
-                                            {/* Delete Button with Alert Dialog */}
-                                            <AlertDialog>
-                                                <AlertDialogTrigger asChild>
-                                                    <Button
-                                                        variant="outline"
-                                                        size="icon"
-                                                        className="h-8 w-8 text-red-600 hover:bg-red-50"
-                                                    >
-                                                        <Trash className="h-4 w-4" />
-                                                    </Button>
-                                                </AlertDialogTrigger>
-                                                <AlertDialogContent>
-                                                    <AlertDialogHeader>
-                                                        <AlertDialogTitle>Delete Role?</AlertDialogTitle>
-                                                        <AlertDialogDescription>
-                                                            Are you sure? This action cannot be undone and the data for <strong>{role.name}</strong> will be permanently deleted.
-                                                        </AlertDialogDescription>
-                                                    </AlertDialogHeader>
-                                                    <AlertDialogFooter>
-                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                        <AlertDialogAction
-                                                            onClick={() => processDelete(role.id)}
-                                                            className="bg-red-600 hover:bg-red-700 text-white"
-                                                        >
-                                                            Yes, Delete
-                                                        </AlertDialogAction>
-                                                    </AlertDialogFooter>
-                                                </AlertDialogContent>
-                                            </AlertDialog>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
+
+                <DataTable
+                    headers={['#', 'Role Name', '']}
+                    data={roles.data}
+                    pagination={roles}
+                    renderRow={(role) => (
+                        <>
+                            <TableCell className="font-mono text-xs text-slate-500">
+                                #{role.id}
+                            </TableCell>
+                            <TableCell className="font-medium text-slate-700">
+                                {role.name}
+                            </TableCell>
+                            <TableCell className="text-right">
+                                <ActionButton
+                                    label={role.name}
+                                    showUrl={`/roles/${role.id}`}
+                                    editUrl={`/roles/${role.id}/edit`}
+                                    onDelete={() => processDelete(role.id)}
+                                    canShow={can('roles.show')}
+                                    canEdit={can('roles.edit')}
+                                    canDelete={can('roles.delete')}
+                                />
+                            </TableCell>
+                        </>
+                    )}
+                />
             </div>
         </>
     );
 }
 
-Index.layout = {
-    breadcrumbs: [
-        { title: 'Roles', href: '/roles' },
-    ],
-};
+Index.layout = { breadcrumbs: [{ title: 'Roles', href: '/roles' }] };

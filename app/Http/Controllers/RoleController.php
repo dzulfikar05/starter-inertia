@@ -13,12 +13,22 @@ class RoleController extends Controller
     /**
      * Menampilkan daftar Role.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data = Role::with('permissions')->latest()->get();
+        $search = $request->input('search');
+        $perPage = $request->input('per_page', 10);
+
+        $data = Role::query()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate($perPage)
+            ->withQueryString();
 
         return Inertia::render('Roles/Index', [
-            'roles' => $data
+            'roles' => $data,
+            'filters' => $request->only(['search', 'per_page'])
         ]);
     }
 
@@ -27,7 +37,6 @@ class RoleController extends Controller
      */
     public function create()
     {
-        // Mengirim semua permission untuk dipilih di checkbox grouping
         $data = Permission::all();
 
         return Inertia::render('Roles/Create', [
