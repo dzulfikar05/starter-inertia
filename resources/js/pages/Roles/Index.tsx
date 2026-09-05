@@ -2,7 +2,7 @@ import { Head, Link, usePage, router } from '@inertiajs/react';
 import { Button } from '@/components/ui/button';
 import { TableCell } from '@/components/ui/table';
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { LucideEye, Pencil, Trash, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 import { debounce } from 'lodash';
@@ -113,7 +113,7 @@ export default function Index({ roles, filters }: RolesProps) {
                         can('roles.create') && (
                             <Button
                                 asChild
-                                className="bg-blue-600 shadow-md hover:bg-blue-700"
+                                className="shadow-md"
                             >
                                 <Link href="/roles/create">
                                     <Plus className="mr-2 h-4 w-4" /> Add Role
@@ -123,43 +123,40 @@ export default function Index({ roles, filters }: RolesProps) {
                     }
                 >
                     <TableFilter
-                    search={search}
-                    onSearchChange={onSearchChange}
-                    perPage={perPage}
-                    onPerPageChange={onPerPageChange}
-                >
-                    <FilterDropdown
-                        onApply={handleApplyFilter}
-                        onReset={() => setTempStatus('all')}
+                        search={search}
+                        onSearchChange={onSearchChange}
+                        perPage={perPage}
+                        onPerPageChange={onPerPageChange}
                     >
-                        <div className="space-y-2">
-                            {/* example filter */}
-                            <Label className="text-xs">Status</Label>
-                            <Select
-                                value={tempStatus}
-                                onValueChange={setTempStatus}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        All Status
-                                    </SelectItem>
-                                    <SelectItem value="active">
-                                        Active
-                                    </SelectItem>
-                                    <SelectItem value="inactive">
-                                        Inactive
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </FilterDropdown>
-                </TableFilter>
+                        <FilterDropdown
+                            onApply={handleApplyFilter}
+                            onReset={() => setTempStatus('all')}
+                        >
+                            <div className="space-y-2">
+                                <Label className="text-xs">Status</Label>
+                                <Select
+                                    value={tempStatus}
+                                    onValueChange={setTempStatus}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            All Status
+                                        </SelectItem>
+                                        <SelectItem value="active">
+                                            Active
+                                        </SelectItem>
+                                        <SelectItem value="inactive">
+                                            Inactive
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </FilterDropdown>
+                    </TableFilter>
                 </PageHeader>
-
-
 
                 <DataTable
                     headers={['#', 'Role Name', '']}
@@ -167,10 +164,10 @@ export default function Index({ roles, filters }: RolesProps) {
                     pagination={roles}
                     renderRow={(role) => (
                         <>
-                            <TableCell className="font-mono text-xs text-slate-500">
+                            <TableCell className="font-mono text-xs text-muted-foreground">
                                 #{role.id}
                             </TableCell>
-                            <TableCell className="font-medium text-slate-700">
+                            <TableCell className="font-medium text-foreground">
                                 {role.name}
                             </TableCell>
                             <TableCell className="text-right">

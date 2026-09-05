@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeftCircleIcon, ChevronDown, ChevronUp, ShieldCheck } from 'lucide-react';
+import { ArrowLeftCircleIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 interface Permission {
@@ -20,14 +20,11 @@ interface Role {
 export default function Edit({ role, permissions }: { role: Role; permissions: Permission[] }) {
     const { data, setData, put, processing, errors } = useForm({
         name: role.name || '',
-        // Mengambil nama permission yang sudah dimiliki role untuk mengisi checkbox awal
         permissions: role.permissions.map((p) => p.name) || [] as string[],
     });
 
-    // State untuk kontrol Show/Hide per grup
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-    // Mengelompokkan permission berdasarkan prefix (misal: users.view -> users)
     const groupedPermissions = useMemo(() => {
         const groups: Record<string, Permission[]> = {};
         permissions.forEach((perm) => {
@@ -83,10 +80,10 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
 
             <div className="space-y-6 p-4">
                 {/* Header Section */}
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md border border-slate-100">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground p-6 shadow-md border border-border">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <h2 className="text-xl font-bold text-gray-800">
+                            <h2 className="text-xl font-bold text-foreground">
                                 Edit Role: <span className="capitalize">{role.name}</span>
                             </h2>
                         </div>
@@ -98,7 +95,7 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
                     </div>
                 </div>
 
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md border border-slate-100">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground p-6 shadow-md border border-border">
                     <form onSubmit={submit} className="max-w-4xl space-y-6">
                         {/* Input Role Name */}
                         <div className="max-w-xl space-y-1">
@@ -114,7 +111,7 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
 
                         {/* Permissions Section */}
                         <div className="space-y-4">
-                            <Label className="text-base font-bold text-slate-700">
+                            <Label className="text-base font-bold text-foreground">
                                 Update Permissions Mapping
                             </Label>
 
@@ -124,27 +121,27 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
                                     const isAllGroupChecked = perms.every((p) => data.permissions.includes(p.name));
 
                                     return (
-                                        <div key={groupName} className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm transition-all">
+                                        <div key={groupName} className="rounded-xl border border-border bg-card overflow-hidden shadow-sm transition-all">
                                             {/* Accordion Header */}
-                                            <div className="flex items-center justify-between bg-slate-50/50 p-4">
+                                            <div className="flex items-center justify-between bg-muted/50 p-4">
                                                 <div className="flex items-center space-x-3">
                                                     <button
                                                         type="button"
                                                         onClick={() => toggleAccordion(groupName)}
-                                                        className="rounded-md p-1 hover:bg-slate-200 text-slate-500"
+                                                        className="rounded-md p-1 hover:bg-muted text-muted-foreground"
                                                     >
                                                         {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                                                     </button>
-                                                    <h3 className="font-bold text-slate-700 capitalize">{groupName} Management</h3>
+                                                    <h3 className="font-bold text-foreground capitalize">{groupName} Management</h3>
                                                 </div>
 
-                                                <div className="flex items-center space-x-2 bg-white px-3 py-1 rounded-lg border border-slate-200">
+                                                <div className="flex items-center space-x-2 bg-card px-3 py-1 rounded-lg border border-border">
                                                     <Checkbox
                                                         id={`all-${groupName}`}
                                                         checked={isAllGroupChecked}
                                                         onCheckedChange={(checked) => toggleGroup(groupName, !!checked)}
                                                     />
-                                                    <label htmlFor={`all-${groupName}`} className="cursor-pointer text-[10px] font-bold uppercase text-slate-500">
+                                                    <label htmlFor={`all-${groupName}`} className="cursor-pointer text-[10px] font-bold uppercase text-muted-foreground">
                                                         Check All
                                                     </label>
                                                 </div>
@@ -152,14 +149,14 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
 
                                             {/* Accordion Content */}
                                             {isExpanded && (
-                                                <div className="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 lg:grid-cols-3 border-t border-slate-100">
+                                                <div className="grid grid-cols-1 gap-3 p-5 md:grid-cols-2 lg:grid-cols-3 border-t border-border">
                                                     {perms.map((permission) => (
                                                         <div
                                                             key={permission.id}
                                                             className={`flex items-center space-x-3 rounded-xl border p-3 transition-all ${
                                                                 data.permissions.includes(permission.name)
-                                                                ? 'bg-blue-50/50 border-blue-200'
-                                                                : 'border-transparent hover:bg-slate-50'
+                                                                    ? 'bg-primary/10 border-primary/30'
+                                                                    : 'border-transparent hover:bg-muted/50'
                                                             }`}
                                                         >
                                                             <Checkbox
@@ -167,7 +164,7 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
                                                                 checked={data.permissions.includes(permission.name)}
                                                                 onCheckedChange={() => handleCheckboxChange(permission.name)}
                                                             />
-                                                            <label htmlFor={`perm-${permission.id}`} className="cursor-pointer text-sm font-medium capitalize text-slate-600">
+                                                            <label htmlFor={`perm-${permission.id}`} className="cursor-pointer text-sm font-medium capitalize text-muted-foreground">
                                                                 {permission.name.split('.')[1] || permission.name}
                                                             </label>
                                                         </div>
@@ -182,10 +179,10 @@ export default function Edit({ role, permissions }: { role: Role; permissions: P
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="border-t pt-4 flex gap-3">
+                        <div className="border-t border-border pt-4 flex gap-3">
                             <Button
                                 type="submit"
-                                className="bg-blue-600 text-white hover:bg-blue-700"
+                                className="shadow-md"
                                 disabled={processing}
                             >
                                 {processing ? 'Updating...' : 'Update Role'}

@@ -91,10 +91,7 @@ export default function Index({ users, filters }: UsersProps) {
                     title="User List"
                     description="Manage registered users, their account details, and assigned roles."
                     renderAction={
-                        <Button
-                            asChild
-                            className="bg-blue-600 shadow-md hover:bg-blue-700"
-                        >
+                        <Button asChild className="shadow-md">
                             <Link href="/users/create">
                                 <Plus className="mr-2 h-4 w-4" /> Add User
                             </Link>
@@ -107,7 +104,6 @@ export default function Index({ users, filters }: UsersProps) {
                         perPage={perPage}
                         onPerPageChange={onPerPageChange}
                     />
-
                 </PageHeader>
 
                 <DataTable
@@ -116,13 +112,13 @@ export default function Index({ users, filters }: UsersProps) {
                     pagination={users}
                     renderRow={(user) => (
                         <>
-                            <TableCell className="font-mono text-xs text-slate-500">
+                            <TableCell className="font-mono text-xs text-muted-foreground">
                                 #{user.id}
                             </TableCell>
-                            <TableCell className="font-semibold text-slate-700">
+                            <TableCell className="font-semibold text-foreground">
                                 {user.name}
                             </TableCell>
-                            <TableCell className="text-slate-600">
+                            <TableCell className="text-muted-foreground">
                                 {user.email}
                             </TableCell>
                             <TableCell>
@@ -131,14 +127,14 @@ export default function Index({ users, filters }: UsersProps) {
                                         user.roles.map((role) => (
                                             <Badge
                                                 key={role.id}
-                                                variant="secondary"
-                                                className="border-blue-100 bg-blue-50 font-medium text-blue-700 capitalize"
+                                                variant="outline"
+                                                className="border-primary/20 bg-primary/10 font-medium text-primary capitalize"
                                             >
                                                 {role.name}
                                             </Badge>
                                         ))
                                     ) : (
-                                        <span className="text-xs text-slate-400 italic">
+                                        <span className="text-xs text-muted-foreground italic">
                                             No Role
                                         </span>
                                     )}

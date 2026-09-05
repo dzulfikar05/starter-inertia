@@ -9,12 +9,12 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, description, renderAction, children }: PageHeaderProps) {
     return (
-        <div className="mx-auto rounded-lg border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="mx-auto rounded-lg border border-border bg-card text-card-foreground p-6 shadow-sm">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h2 className="text-xl font-bold text-gray-800">{title}</h2>
+                    <h2 className="text-xl font-bold text-foreground">{title}</h2>
                     {description && (
-                        <p className="text-sm text-gray-500">{description}</p>
+                        <p className="text-sm text-muted-foreground">{description}</p>
                     )}
                 </div>
                 {renderAction && (

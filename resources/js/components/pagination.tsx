@@ -12,8 +12,10 @@ interface Props {
 export function Pagination({ links, from, to, total }: Props) {
     return (
         <div className="flex flex-col gap-4 px-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-sm text-slate-500">
-                Showing <span className="font-medium text-slate-700">{from ?? 0}</span> to <span className="font-medium text-slate-700">{to ?? 0}</span> of <span className="font-medium text-slate-700">{total}</span> entries
+            {/* Ubah text-slate-500 menjadi text-muted-foreground */}
+            <div className="text-sm text-muted-foreground">
+                {/* Ubah text-slate-700 menjadi text-foreground */}
+                Showing <span className="font-medium text-foreground">{from ?? 0}</span> to <span className="font-medium text-foreground">{to ?? 0}</span> of <span className="font-medium text-foreground">{total}</span> entries
             </div>
             <div className="flex flex-wrap items-center gap-1">
                 {links.map((link, index) => {

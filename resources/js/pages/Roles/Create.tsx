@@ -17,10 +17,8 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
         permissions: [] as string[],
     });
 
-    // State untuk kontrol Show/Hide per grup
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
 
-    // Mengelompokkan permission berdasarkan prefix
     const groupedPermissions = useMemo(() => {
         const groups: Record<string, Permission[]> = {};
         permissions.forEach((perm) => {
@@ -75,9 +73,9 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
             <Head title="Create Role" />
 
             <div className="space-y-6 p-4">
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground p-6 shadow-md border border-border">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-gray-800">
+                        <h2 className="text-xl font-bold text-foreground">
                             Create New Role
                         </h2>
                         <Button asChild variant="outline">
@@ -89,7 +87,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                     </div>
                 </div>
 
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground p-6 shadow-md border border-border">
                     <form onSubmit={submit} className="max-w-4xl space-y-6">
                         <div className="max-w-xl space-y-1">
                             <Label htmlFor="name">Role Name</Label>
@@ -109,7 +107,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                         </div>
 
                         <div className="space-y-4">
-                            <Label className="text-base font-bold text-slate-700">
+                            <Label className="text-base font-bold text-foreground">
                                 Assign Permissions
                             </Label>
 
@@ -128,10 +126,10 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                         return (
                                             <div
                                                 key={groupName}
-                                                className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all"
+                                                className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-all"
                                             >
                                                 {/* Header Grup */}
-                                                <div className="flex items-center justify-between bg-slate-50/50 p-4">
+                                                <div className="flex items-center justify-between bg-muted/50 p-4">
                                                     <div className="flex items-center space-x-3">
                                                         <button
                                                             type="button"
@@ -140,7 +138,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                                                     groupName,
                                                                 )
                                                             }
-                                                            className="rounded-md p-1 text-slate-500 hover:bg-slate-200"
+                                                            className="rounded-md p-1 text-muted-foreground hover:bg-muted"
                                                         >
                                                             {isExpanded ? (
                                                                 <ChevronUp className="h-4 w-4" />
@@ -148,13 +146,13 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                                                 <ChevronDown className="h-4 w-4" />
                                                             )}
                                                         </button>
-                                                        <h3 className="font-bold text-slate-700 capitalize">
+                                                        <h3 className="font-bold text-foreground capitalize">
                                                             {groupName}{' '}
                                                             Management
                                                         </h3>
                                                     </div>
 
-                                                    <div className="flex items-center space-x-2 rounded-lg border border-slate-200 bg-white px-3 py-1">
+                                                    <div className="flex items-center space-x-2 rounded-lg border border-border bg-card px-3 py-1">
                                                         <Checkbox
                                                             id={`all-${groupName}`}
                                                             checked={
@@ -171,7 +169,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                                         />
                                                         <label
                                                             htmlFor={`all-${groupName}`}
-                                                            className="cursor-pointer text-[10px] font-bold tracking-wider text-slate-500 uppercase"
+                                                            className="cursor-pointer text-[10px] font-bold tracking-wider text-muted-foreground uppercase"
                                                         >
                                                             Check All
                                                         </label>
@@ -180,7 +178,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
 
                                                 {/* Konten Permission (Show/Hide) */}
                                                 {isExpanded && (
-                                                    <div className="grid grid-cols-1 gap-3 border-t border-slate-100 p-5 md:grid-cols-2 lg:grid-cols-3">
+                                                    <div className="grid grid-cols-1 gap-3 border-t border-border p-5 md:grid-cols-2 lg:grid-cols-3">
                                                         {perms.map(
                                                             (permission) => (
                                                                 <div
@@ -191,8 +189,8 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                                                         data.permissions.includes(
                                                                             permission.name,
                                                                         )
-                                                                            ? 'border-blue-200 bg-blue-50/50'
-                                                                            : 'border-transparent hover:bg-slate-50'
+                                                                            ? 'border-primary/30 bg-primary/10'
+                                                                            : 'border-transparent hover:bg-muted/50'
                                                                     }`}
                                                                 >
                                                                     <Checkbox
@@ -208,7 +206,7 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                                                                     />
                                                                     <label
                                                                         htmlFor={`perm-${permission.id}`}
-                                                                        className="cursor-pointer text-sm font-medium text-slate-600 capitalize"
+                                                                        className="cursor-pointer text-sm font-medium text-muted-foreground capitalize"
                                                                     >
                                                                         {permission.name.split(
                                                                             '.',
@@ -232,10 +230,10 @@ export default function Create({ permissions }: { permissions: Permission[] }) {
                             )}
                         </div>
 
-                        <div className="border-t pt-4">
+                        <div className="border-t border-border pt-4">
                             <Button
                                 type="submit"
-                                className="w-full bg-blue-600 text-white hover:bg-blue-700 sm:w-auto"
+                                className="w-full sm:w-auto shadow-md"
                                 disabled={processing}
                             >
                                 {processing ? 'Saving...' : 'Save'}

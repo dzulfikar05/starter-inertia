@@ -17,9 +17,11 @@ interface Props<T> {
 export function DataTable<T>({ headers, data, renderRow, pagination }: Props<T>) {
     return (
         <div className="space-y-4">
-            <div className="overflow-hidden rounded-lg border border-slate-100 bg-white shadow-sm">
+            {/* Ubah border-slate-100 dan bg-white menjadi border-border, bg-card, dan text-card-foreground */}
+            <div className="overflow-hidden rounded-lg border border-border bg-card text-card-foreground shadow-sm">
                 <Table>
-                    <TableHeader className="bg-slate-50/50">
+                    {/* Ubah bg-slate-50/50 menjadi bg-muted/50 */}
+                    <TableHeader className="bg-muted/50">
                         <TableRow>
                             {headers.map((header, i) => (
                                 <TableHead key={i} className={i === headers.length - 1 ? "text-right" : ""}>
@@ -31,13 +33,15 @@ export function DataTable<T>({ headers, data, renderRow, pagination }: Props<T>)
                     <TableBody>
                         {data.length > 0 ? (
                             data.map((item, i) => (
-                                <TableRow key={i} className="transition-colors hover:bg-slate-50/50">
+                                /* Ubah hover:bg-slate-50/50 menjadi hover:bg-muted/50 */
+                                <TableRow key={i} className="transition-colors hover:bg-muted/50">
                                     {renderRow(item)}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={headers.length} className="h-24 text-center text-slate-500 italic">
+                                {/* Ubah text-slate-500 menjadi text-muted-foreground */}
+                                <TableCell colSpan={headers.length} className="h-24 text-center text-muted-foreground italic">
                                     No results found.
                                 </TableCell>
                             </TableRow>

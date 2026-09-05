@@ -14,7 +14,7 @@ export default function Create({ roles }: { roles: Role[] }) {
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         email: '',
-        role: '', // State baru untuk role
+        role: '',
         password: '',
         password_confirmation: '',
     });
@@ -29,9 +29,9 @@ export default function Create({ roles }: { roles: Role[] }) {
             <Head title="Users Create" />
 
             <div className="space-y-6 p-4">
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground border border-border p-6 shadow-md">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-gray-800">
+                        <h2 className="text-xl font-bold text-foreground">
                             Create New User
                         </h2>
                         <Button asChild variant="outline">
@@ -40,9 +40,8 @@ export default function Create({ roles }: { roles: Role[] }) {
                     </div>
                 </div>
 
-                <div className="mx-auto rounded-lg bg-white p-6 shadow-md">
+                <div className="mx-auto rounded-lg bg-card text-card-foreground border border-border p-6 shadow-md">
                     <form onSubmit={submit} className="max-w-xl space-y-4">
-
                         {/* Input Name */}
                         <div className="space-y-1">
                             <Label htmlFor="name">Name</Label>
@@ -114,7 +113,7 @@ export default function Create({ roles }: { roles: Role[] }) {
                         <div className="pt-4">
                             <Button
                                 type="submit"
-                                className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto text-white"
+                                className="w-full sm:w-auto"
                                 disabled={processing}
                             >
                                 {processing ? 'Saving...' : 'Save'}

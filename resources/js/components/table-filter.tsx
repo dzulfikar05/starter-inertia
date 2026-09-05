@@ -25,7 +25,8 @@ export function TableFilter({
 }: Props) {
     return (
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 text-sm text-slate-600">
+            {/* Ubah text-slate-600 menjadi text-muted-foreground */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>Show</span>
                 <Select value={perPage} onValueChange={onPerPageChange}>
                     <SelectTrigger className="w-[80px]">
@@ -43,7 +44,8 @@ export function TableFilter({
 
             <div className="flex flex-1 items-center justify-end gap-2">
                 <div className="relative w-full sm:w-64">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    {/* Ubah text-slate-400 menjadi text-muted-foreground */}
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         placeholder="Search..."
                         value={search}
